@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 Not Found - Press-n-Go</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto Mono', monospace;
+            background-color: #f0f0f0;
+            color: #000;
+        }
+        .brutalist-window {
+            border: 3px solid #000;
+            background-color: #fff;
+            box-shadow: 8px 8px 0 #000;
+        }
+        .brutalist-btn {
+            background: #ffff00;
+            color: #000;
+            border: 3px solid #000;
+            font-weight: bold;
+            padding: 0.75rem 1.5rem;
+            box-shadow: 4px 4px 0 #000;
+            transition: all 0.1s ease-in-out;
+            display: inline-block;
+            text-decoration: none;
+        }
+        .brutalist-btn:hover {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0 #000;
+        }
+        .brutalist-btn:active {
+            box-shadow: 0 0 0 #000;
+            transform: translate(4px, 4px);
+        }
+    </style>
+</head>
+<body>
+
+<div class="min-h-screen flex items-center justify-center p-4 text-base">
+    <div class="w-full max-w-lg brutalist-window p-8 text-center">
+        <div class="text-left">
+            <h1 class="text-8xl font-bold uppercase">404</h1>
+            <p class="mt-2 text-2xl">PAGE NOT FOUND</p>
+            <p class="mt-6 text-sm">
+                The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.
+            </p>
+        </div>
+
+        <div class="mt-12">
+            <a href="/" class="brutalist-btn uppercase">
+                Go Back Home
+            </a>
+        </div>
+
+        <div class="mt-12 pt-6 border-t-2 border-black text-left text-xs text-gray-600">
+            <p>
+                Project source:
+                <a href="https://github.com/decima/press-n-go" target="_blank" class="font-bold underline hover:bg-yellow-200">
+                    github.com/decima/press-n-go
+                </a>
+            </p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
