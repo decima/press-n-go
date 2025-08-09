@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  press-n-go:
+    # Build the image from the Dockerfile in the current directory
+    # build: .
+    image: decima/press-n-go:latest
+    # Name of the container
+    container_name: press-n-go
+
+    # Port mapping: <host_port>:<container_port>
+    ports:
+      - "8080:8080"
+
+    # Environment variables for the application
+    # Change these to your desired credentials.
+    # If both are left empty, authentication will be disabled.
+    environment:
+      - PNG_USERNAME=admin
+      - PNG_PASSWORD=password
+      - PNG_PORT=8080 # This should match the container port above
+
+    # Volumes to persist data
+    # This mounts the 'public' directory from your host into the container.
+    # This means your published pages will be saved on your local machine.
+    volumes:
+      - ./public:/app/public
+
+    # Restart policy
+    restart: unless-stopped
