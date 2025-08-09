@@ -77,6 +77,9 @@ func main() {
 	router := gin.Default()
 	router.LoadHTMLGlob("templates/*.html")
 
+	// serve assets folder on /assets
+	router.StaticFS("/assets", http.Dir("assets"))
+
 	// Use the static middleware to serve generated pages from the root.
 	router.Use(static.Serve("/", static.LocalFile("./public", false)))
 
@@ -123,35 +126,29 @@ func main() {
 
 // --- Custom Middleware ---
 
+func isAuthenticated(c *gin.Context) bool {
+	cookie, err := c.Cookie("session")
+	if err != nil {
+		return false
+	}
+
+	cookieValue := make(map[string]string)
+	if err = cookieHandler.Decode("session", cookie, &cookieValue); err != nil {
+		return false
+	}
+
+	return cookieValue["authenticated"] == "true"
+}
+
+// --- Middleware ---
 func authRequired() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// If no credentials are set, skip authentication
-		if appConfig.Username == "" || appConfig.Password == "" {
+		if appConfig.Username == "" || appConfig.Password == "" || isAuthenticated(c) {
 			c.Next()
 			return
 		}
-
-		cookie, err := c.Cookie("session")
-		if err != nil {
-			c.Redirect(http.StatusFound, "/login")
-			c.Abort()
-			return
-		}
-
-		cookieValue := make(map[string]string)
-		if err = cookieHandler.Decode("session", cookie, &cookieValue); err != nil {
-			c.Redirect(http.StatusFound, "/login")
-			c.Abort()
-			return
-		}
-
-		if cookieValue["authenticated"] != "true" {
-			c.Redirect(http.StatusFound, "/login")
-			c.Abort()
-			return
-		}
-
-		c.Next()
+		c.Redirect(http.StatusFound, "/login")
+		c.Abort()
 	}
 }
 
@@ -161,20 +158,24 @@ func showLoginPage(c *gin.Context) {
 	c.HTML(http.StatusOK, "login.html", nil)
 }
 
-func handleLogin(c *gin.Context) {
-	username := c.PostForm("username")
-	password := c.PostForm("password")
+func createSession(c *gin.Context) error {
+	value := map[string]string{"authenticated": "true"}
+	encoded, err := cookieHandler.Encode("session", value)
+	if err != nil {
+		return err
+	}
+	c.SetCookie("session", encoded, 3600*24, "/", "", false, true)
+	return nil
+}
 
+func handleLogin(c *gin.Context) {
+	username, password := c.PostForm("username"), c.PostForm("password")
 	if username == appConfig.Username && password == appConfig.Password {
-		value := map[string]string{
-			"authenticated": "true",
-		}
-		if encoded, err := cookieHandler.Encode("session", value); err == nil {
-			c.SetCookie("session", encoded, 3600*24, "/", "", false, true)
-			c.Redirect(http.StatusFound, "/")
-		} else {
+		if err := createSession(c); err != nil {
 			c.HTML(http.StatusInternalServerError, "login.html", gin.H{"Error": "Failed to create session"})
+			return
 		}
+		c.Redirect(http.StatusFound, "/")
 	} else {
 		c.HTML(http.StatusUnauthorized, "login.html", gin.H{"Error": "Invalid username or password"})
 	}
@@ -186,24 +187,33 @@ func handleLogout(c *gin.Context) {
 	c.Redirect(http.StatusFound, "/login")
 }
 
+func generatePageID() (string, error) {
+	randomBytes := make([]byte, 8)
+	if _, err := rand.Read(randomBytes); err != nil {
+		return "", fmt.Errorf("failed to generate random ID: %w", err)
+	}
+	return hex.EncodeToString(randomBytes), nil
+}
+
 func handleUpload(c *gin.Context) {
 	var req UploadRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	randomBytes := make([]byte, 8)
-	if _, err := rand.Read(randomBytes); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate random name"})
+
+	pageID, err := generatePageID()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	pageID := hex.EncodeToString(randomBytes)
+
 	if err := createPageFile(pageID, req); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	newURL := fmt.Sprintf("/%s/", pageID)
-	c.JSON(http.StatusOK, gin.H{"url": newURL})
+
+	c.JSON(http.StatusOK, gin.H{"url": fmt.Sprintf("/%s/", pageID)})
 }
 
 func handleListPages(c *gin.Context) {

@@ -8,103 +8,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Roboto Mono', monospace;
-            background-color: #f0f0f0;
-            color: #000;
-        }
-        .brutalist-window {
-            border: 3px solid #000;
-            background-color: #fff;
-            box-shadow: 8px 8px 0 #000;
-        }
-        .form-radio {
-            appearance: none;
-            width: 1.25rem;
-            height: 1.25rem;
-            border: 2px solid #000;
-            background-color: #fff;
-            cursor: pointer;
-            position: relative;
-        }
-        .form-radio:checked {
-            background-color: #000;
-        }
-        textarea, select {
-            background-color: #fff;
-            border: 2px solid #000;
-            color: #000;
-            font-family: 'Roboto Mono', monospace;
-            padding: 0.5rem;
-            resize: vertical;
-        }
-        select {
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-            background-position: right 0.5rem center;
-            background-repeat: no-repeat;
-            background-size: 1.5em 1.5em;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
-        }
-        textarea::placeholder {
-            color: #888;
-        }
-        .brutalist-btn {
-            background: #ffff00;
-            color: #000;
-            border: 3px solid #000;
-            font-weight: bold;
-            padding: 0.75rem 1.5rem;
-            box-shadow: 4px 4px 0 #000;
-            transition: all 0.1s ease-in-out;
-        }
-        .brutalist-btn:active {
-            box-shadow: 0 0 0 #000;
-            transform: translate(4px, 4px);
-        }
-        .action-btn {
-            padding: 0.25rem 0.5rem;
-            box-shadow: 2px 2px 0 #000;
-        }
-        .action-btn:active {
-            box-shadow: 0 0 0 #000;
-            transform: translate(2px, 2px);
-        }
-        .delete-btn {
-            background: #ff5555;
-        }
-        .download-btn {
-            background: #55aaff;
-            text-decoration: none;
-        }
-        .logout-btn {
-            background: #c0c0c0;
-            padding: 0.25rem 0.5rem;
-            box-shadow: 2px 2px 0 #000;
-            text-decoration: none;
-        }
-        .logout-btn:active {
-            box-shadow: 0 0 0 #000;
-            transform: translate(2px, 2px);
-        }
-        .modal-content {
-            border: 3px solid #000;
-            background-color: #fff;
-            box-shadow: 8px 8px 0 #000;
-        }
-        .theme-picker {
-            transition: opacity 0.3s, max-height 0.3s;
-            max-height: 0;
-            opacity: 0;
-            overflow: hidden;
-        }
-        .theme-picker.visible {
-            max-height: 200px; /* Adjust as needed */
-            opacity: 1;
-        }
-    </style>
+    <link rel="stylesheet" href="/assets/style.css"/>
+
 </head>
 <body>
 
@@ -114,7 +19,8 @@
             <h1 class="text-4xl font-bold uppercase">Press-n-Go</h1>
             <p class="mt-2">A raw content publisher.</p>
             <p class="mt-6 text-sm">
-                This is a simple, self-hosted tool to quickly publish HTML or Markdown content to a permanent URL. Paste your code, choose a theme, and get a shareable link instantly.
+                This is a simple, self-hosted tool to quickly publish HTML or Markdown content to a permanent URL. Paste
+                your code, choose a theme, and get a shareable link instantly.
             </p>
         </div>
 
@@ -123,8 +29,12 @@
             <div class="mb-6">
                 <label class="block mb-3 font-bold">TYPE</label>
                 <div class="flex space-x-6">
-                    <label class="flex items-center"><input type="radio" name="contentType" value="html" class="form-radio" checked><span class="ml-3">HTML</span></label>
-                    <label class="flex items-center"><input type="radio" name="contentType" value="markdown" class="form-radio"><span class="ml-3">MARKDOWN</span></label>
+                    <label class="flex items-center"><input type="radio" name="contentType" value="html"
+                                                            class="form-radio" checked><span
+                            class="ml-3">HTML</span></label>
+                    <label class="flex items-center"><input type="radio" name="contentType" value="markdown"
+                                                            class="form-radio"><span
+                            class="ml-3">MARKDOWN</span></label>
                 </div>
             </div>
             <div id="themePicker" class="mb-6 theme-picker">
@@ -137,7 +47,8 @@
             </div>
             <div class="mb-6">
                 <label for="content" class="block mb-3 font-bold">CONTENT</label>
-                <textarea id="content" name="content" rows="14" class="w-full" placeholder="Input buffer..." required></textarea>
+                <textarea id="content" name="content" rows="14" class="w-full" placeholder="Input buffer..."
+                          required></textarea>
             </div>
             <div class="flex items-center justify-start mt-4">
                 <button type="submit" id="submitButton" class="brutalist-btn">PUBLISH</button>
@@ -159,7 +70,8 @@
             <p>Made with love by Decima and Gemini.</p>
             <p class="mt-1">
                 Project source:
-                <a href="https://github.com/decima/press-n-go" target="_blank" class="font-bold underline hover:bg-yellow-200">
+                <a href="https://github.com/decima/press-n-go" target="_blank"
+                   class="font-bold underline hover:bg-yellow-200">
                     github.com/decima/press-n-go
                 </a>
             </p>
@@ -295,8 +207,9 @@
             return;
         }
 
+        let response = {}
         try {
-            const response = await fetch(`/api/pages/${pageId}`, { method: 'DELETE' });
+            response = await fetch(`/api/pages/${pageId}`, {method: 'DELETE'});
             if (!response.ok) throw new Error('Failed to delete');
 
             // Remove the element from the DOM for a smooth UX
@@ -304,7 +217,9 @@
 
         } catch (error) {
             console.error('Delete failed:', error);
-            alert('Could not delete the page.');
+            if (response.type === 'basic') {
+                window.location.href = "/login"
+            }
         }
     }
 
@@ -316,11 +231,12 @@
         const type = document.querySelector('input[name="contentType"]:checked').value;
         const themeName = document.getElementById('theme').value;
         const themeCSS = themes[themeName] || themes['github'];
+        let response = {};
         try {
-            const response = await fetch('/api/upload', {
+            response = await fetch('/api/upload', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ content, type, themeCSS }),
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({content, type, themeCSS}),
             });
             const result = await response.json();
             if (!response.ok) throw new Error(result.error || 'COMMAND FAILED');
@@ -331,7 +247,11 @@
             toggleThemePicker();
             fetchAndRenderPages(); // Refresh the list after successful upload
         } catch (error) {
-            alert('ERROR: ' + error.message);
+            if (response.type === 'basic') {
+                window.location.href = "/login"
+            } else {
+                console.error(error.message, error)
+            }
         } finally {
             submitButton.disabled = false;
             submitButton.innerHTML = originalButtonText;
@@ -350,7 +270,9 @@
 
     function copyToClipboard(text) {
         if (navigator.clipboard) {
-            navigator.clipboard.writeText(text).then(() => { copyButton.innerText = 'COPIED!'; });
+            navigator.clipboard.writeText(text).then(() => {
+                copyButton.innerText = 'COPIED!';
+            });
         } else {
             document.execCommand('copy');
             copyButton.innerText = 'COPIED!';

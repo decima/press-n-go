@@ -32,6 +32,7 @@ COPY --from=builder /press-n-go .
 
 # Copy the templates directory. The application needs this to render the homepage.
 COPY templates ./templates
+COPY assets ./assets
 
 # The application creates the 'public' directory at runtime,
 # but creating it here ensures the correct permissions are set for our non-root user.
